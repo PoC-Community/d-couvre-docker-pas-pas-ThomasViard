@@ -1,0 +1,37 @@
+version: "3"
+
+services:
+  app:
+    container_name: api
+    build: ./epytodo
+    ports:
+      - "5000:5000"
+    environment:
+      MYSQL_DATABASE: "epytodo"
+      MYSQL_USER: "epytodo_user"
+      MYSQL_PASSWORD: "epytodo_pass"
+    networks:
+      - epytodo-network
+    restart: on-failure
+
+  db:
+    container_name: database
+    image: mariadb:latest
+    ports:
+      - "3000:3000"
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "no"
+      MYSQL_DATABASE: "epytodo"
+      MYSQL_USER: "epytodo_user"
+      MYSQL_PASSWORD: "epytodo_pass"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ${PWD}/epytodo/epytodo.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - epytodo-network
+
+volumes:
+  mysql-data:
+
+networks:
+  epytodo-network:
